@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasifikasi TulTang</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 40%, #f3e8ff 100%);
+            --card-glass: rgba(255, 255, 255, 0.85);
+            --card-shadow: 0 20px 40px -15px rgba(99, 102, 241, 0.15), 0 0 15px rgba(255, 255, 255, 0.7);
+            --accent-primary: #6366f1;
+            --accent-secondary: #06b6d4;
+            --accent-purple: #a855f7;
+            --text-dark: #1e1b4b;
+            --text-muted: #64748b;
+            --border-glow: rgba(99, 102, 241, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 2.5rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glowing background circles */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(50px);
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            right: -100px;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
+            z-index: -1;
+            filter: blur(60px);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            max-width: 850px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1.2rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            color: var(--accent-primary);
+            font-weight: 600;
+            font-size: 0.88rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #312e81 0%, #4338ca 50%, #6d28d9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+            line-height: 1.2;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            font-weight: 400;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            display: grid;
+            grid-template-columns: 1fr 1.1fr;
+            gap: 2.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 28px;
+            padding: 2.2rem;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .card h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .upload-zone {
+            border: 2px dashed rgba(99, 102, 241, 0.35);
+            border-radius: 20px;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover,
+        .upload-zone.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(99, 102, 241, 0.05);
+            transform: scale(1.01);
+        }
+
+        .upload-icon-wrapper {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .upload-zone:hover .upload-icon-wrapper {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 1.1rem 2rem;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 1.8rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 12px 25px -5px rgba(79, 70, 229, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(79, 70, 229, 0.5);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .preview-img {
+            max-width: 100%;
+            max-height: 220px;
+            border-radius: 16px;
+            margin-top: 1rem;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-container {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-pill {
+            padding: 1.2rem;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .pill-bold {
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            color: #0369a1;
+            border: 1.5px solid #38bdf8;
+        }
+
+        .pill-normal {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #15803d;
+            border: 1.5px solid #4ade80;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            padding: 1.2rem;
+            border-radius: 18px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+
+        .visual-tabs-header {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-top: 1.8rem;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visual-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .visual-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .visual-card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 1.2rem;
+            border: 1.5px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.08);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .visual-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15);
+        }
+
+        .visual-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: #020617;
+            padding: 0.4rem;
+        }
+
+        .visual-card p {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-top: 0.8rem;
+        }
+
+        .loader-wrapper {
+            display: none;
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(99, 102, 241, 0.2);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s ease-in-out infinite;
+            margin: 0 auto 1rem auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+            margin-top: 1.8rem;
+        }
+
+        .btn-reset {
+            background: #f1f5f9;
+            color: #475569;
+            font-weight: 700;
+            padding: 1.1rem 1rem;
+            border-radius: 16px;
+            border: 1.5px solid #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-reset:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Analisis Ketebalan Tinta Tulisan Tangan</h1>
+        <p>Klasifikasi Presisi Fisik Stroke Tinta (Bold vs Normal) Berbasis Distance Transform & Gradient HOG</p>
+    </header>
+
+    <div class="container">
+        <!-- CARD 1: INPUT CONTROLLER -->
+        <div class="card">
+            <h2>📤 Upload Gambar</h2>
+            <form id="uploadForm">
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon-wrapper">✍️</div>
+                    <p id="uploadText" style="font-weight: 600; color: var(--text-dark); font-size: 1.05rem;">
+                        Klik atau Tarik foto tulisan tangan di sini
+                    </p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+                        Mendukung format PNG, JPG, WEBP (Maks 16MB)
+                    </p>
+                    <img id="previewImg" class="preview-img" alt="Preview Input">
+                </div>
+                <input type="file" id="fileInput" name="file" accept="image/*">
+                <div class="btn-group">
+                    <button type="submit" class="btn-submit" style="margin-top:0;">
+                        <span>Proses</span> ⚡
+                    </button>
+                    <button type="button" class="btn-reset" id="resetBtn">
+                        <span>Reset</span> 🔄
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- CARD 2: AI ANALYTICS DASHBOARD -->
+        <div class="card">
+            <h2>⚡ Hasil Analisis</h2>
+
+            <div class="loader-wrapper" id="loaderWrapper">
+                <div class="loader-spinner"></div>
+                <p style="font-weight: 600; color: var(--accent-primary);">Mengekstrak Fitur Distance Transform...</p>
+            </div>
+
+            <div id="emptyState" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                <p style="font-weight: 500;">Silakan unggah gambar di panel sebelah kiri untuk menampilkan analisis
+                    ketebalan tinta dan heatmap matriks visual.</p>
+            </div>
+
+            <div class="result-container" id="resultContainer">
+                <div class="status-pill pill-bold" id="statusPill">
+                    <span id="statusIcon">🖊️</span> <span id="statusText">BOLD / TEBAL</span>
+                </div>
+
+                <div class="stats-grid" style="grid-template-columns: repeat(5, 1fr);">
+                    <div class="stat-card">
+                        <div class="stat-label">Keyakinan Model</div>
+                        <div class="stat-value" id="confidenceVal" style="color: var(--accent-primary);">97.8%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Rata-Rata (Mean)</div>
+                        <div class="stat-value" id="thickVal">2.45 px</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Batas Threshold</div>
+                        <div class="stat-value">1.40 px</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Ketebalan Min</div>
+                        <div class="stat-value" id="minThickVal">0.50 px</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Ketebalan Max</div>
+                        <div class="stat-value" id="maxThickVal">3.80 px</div>
+                    </div>
+                </div>
+
+                <!-- EXPLANATION BOX -->
+                <div
+                    style="background: rgba(99, 102, 241, 0.08); border: 1.5px solid rgba(99, 102, 241, 0.25); padding: 1.2rem; border-radius: 18px; margin-top: 0.5rem;">
+                    <div
+                        style="font-size: 1rem; font-weight: 700; color: var(--accent-primary); margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.4rem;">
+                        💡 Penjelasan Alasan Klasifikasi & Parameter Fisik
+                    </div>
+                    <p id="explanationText"
+                        style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.5; font-weight: 500;">
+                        Sistem menganalisis diameter Euclidean Distance Transform pada stroke tinta. Rata-rata ketebalan
+                        dibandingkan dengan batas ambang (threshold) 1.40 px.
+                    </p>
+                </div>
+
+                <div>
+                    <div class="visual-tabs-header">📸 Visualisasi Ekstraksi Komputer Vision</div>
+                    <div class="visual-grid">
+                        <div class="visual-card">
+                            <img id="imgPrep" src="" alt="Preprocessing">
+                            <p>1. Preprocessing & Crop</p>
+                        </div>
+                        <div class="visual-card">
+                            <img id="imgHeat" src="" alt="Heatmap">
+                            <p>2. Distance Heatmap Map</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const previewImg = document.getElementById('previewImg');
+        const uploadText = document.getElementById('uploadText');
+        const uploadForm = document.getElementById('uploadForm');
+        const loaderWrapper = document.getElementById('loaderWrapper');
+        const emptyState = document.getElementById('emptyState');
+        const resultContainer = document.getElementById('resultContainer');
+        const statusPill = document.getElementById('statusPill');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusText = document.getElementById('statusText');
+        const confidenceVal = document.getElementById('confidenceVal');
+        const thickVal = document.getElementById('thickVal');
+        const minThickVal = document.getElementById('minThickVal');
+        const maxThickVal = document.getElementById('maxThickVal');
+        const explanationText = document.getElementById('explanationText');
+        const imgPrep = document.getElementById('imgPrep');
+        const imgHeat = document.getElementById('imgHeat');
+
+        const resetBtn = document.getElementById('resetBtn');
+        resetBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            previewImg.src = '';
+            previewImg.style.display = 'none';
+            uploadText.style.display = 'block';
+            resultContainer.style.display = 'none';
+            emptyState.style.display = 'block';
+            loaderWrapper.style.display = 'none';
+        });
+
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                showPreview(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) {
+                showPreview(fileInput.files[0]);
+            }
+        });
+
+        function showPreview(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                uploadText.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!fileInput.files.length) {
+                alert('Silakan pilih atau seret foto tulisan tangan terlebih dahulu!');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            emptyState.style.display = 'none';
+            resultContainer.style.display = 'none';
+            loaderWrapper.style.display = 'block';
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                loaderWrapper.style.display = 'none';
+
+                if (response.ok) {
+                    statusText.textContent = data.is_bold ? 'BOLD / TEBAL' : 'NORMAL / TIPIS';
+                    statusIcon.textContent = data.is_bold ? '🖊️' : '✏️';
+                    statusPill.className = 'status-pill ' + (data.is_bold ? 'pill-bold' : 'pill-normal');
+                    confidenceVal.textContent = data.confidence;
+                    thickVal.textContent = data.real_thick;
+                    minThickVal.textContent = data.min_thick;
+                    maxThickVal.textContent = data.max_thick;
+                    explanationText.textContent = data.explanation;
+                    imgPrep.src = data.img_prep;
+                    imgHeat.src = data.img_heat;
+                    resultContainer.style.display = 'flex';
+                } else {
+                    alert('Error: ' + data.error);
+                    emptyState.style.display = 'block';
+                }
+            } catch (err) {
+                loaderWrapper.style.display = 'none';
+                console.error("Client Error:", err);
+                alert('Error Pemrosesan Client: ' + err.message);
+                emptyState.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>
