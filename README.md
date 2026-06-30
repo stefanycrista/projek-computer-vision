@@ -1,8 +1,6 @@
 # Projek Computer Vision - Analisis & Klasifikasi Ketebalan Tinta Tulisan Tangan
 
-Aplikasi web berbasis **Flask** dan **Computer Vision** (OpenCV) untuk melakukan analisis citra tulisan tangan, ekstraksi fitur ketebalan stroke (*Distance Transform*), analisis kepadatan piksel, dan klasifikasi jenis tinta (Bold/Tebal vs Normal/Tipis).
-
-Proyek ini dibuat sebagai syarat pemenuhan **Final Proyek Semester (Pertemuan 15)**.
+Aplikasi web berbasis **Flask** dan **Computer Vision** (OpenCV) untuk melakukan analisis citra tulisan tangan, ekstraksi fitur ketebalan stroke (*Distance Transform*), analisis kepadatan piksel, dan klasifikasi jenis tinta (Bold/Tebal vs Normal/Tipis).**.
 
 ---
 
